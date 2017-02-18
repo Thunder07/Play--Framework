@@ -9,6 +9,9 @@ set(CMAKE_MODULE_PATH
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+find_package(OpenAL REQUIRED)
+include_directories(${OPENAL_INCLUDE_DIR})
+
 include_directories(../../include)
 
 set(SRC_FILES
