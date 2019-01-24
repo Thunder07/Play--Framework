@@ -14,6 +14,7 @@ if(UNIX OR WIN32 AND NOT ANDROID AND NOT APPLE)
 		add_subdirectory(
 			${CMAKE_CURRENT_SOURCE_DIR}/../../../Dependencies/glew-2.0.0
 			${CMAKE_CURRENT_BINARY_DIR}/glew-2.0.0
+			EXCLUDE_FROM_ALL
 		)
 	endif()
 	list(APPEND PROJECT_LIBS glew_s)
