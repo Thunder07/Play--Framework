@@ -138,7 +138,6 @@ namespace Framework
 		typedef std::shared_ptr<CPreference> PreferencePtr;
 		typedef std::map<std::string, PreferencePtr> PreferenceMapType;
 
-		void								Load();
 		void								InsertPreference(const PreferencePtr&);
 
 		template <typename Type> std::shared_ptr<Type>			FindPreference(const char*);
@@ -153,9 +152,13 @@ namespace Framework
 			return std::static_pointer_cast<Type>(preference);
 		}
 
-		PreferenceMapType					m_preferences;
 		std::mutex							m_mutex;
-		PathType							m_path;
 		bool								m_readonly;
+
+	protected:
+		void								Load();
+
+		PreferenceMapType					m_preferences;
+		PathType							m_path;
 	};
 }
