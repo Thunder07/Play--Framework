@@ -14,3 +14,8 @@ void StringUtils::replace_all(std::string& str, const std::string replace, std::
 	str.clear();
 	str += str2;
 }
+
+void StringUtils::erase_all(std::string& str, std::string remove)
+{
+	StringUtils::replace_all(str, remove, "");
+}
