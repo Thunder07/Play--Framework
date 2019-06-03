@@ -1,48 +1,50 @@
 #include "PathUtils.h"
 #include "Utf8.h"
 
+#include <boost/system/error_code.hpp>
+
 using namespace Framework;
 
 #ifdef _WIN32
 
 #if WINAPI_FAMILY_ONE_PARTITION(WINAPI_FAMILY, WINAPI_PARTITION_APP)
 
-boost::filesystem::path PathUtils::GetPersonalDataPath()
+ghc::filesystem::path PathUtils::GetPersonalDataPath()
 {
 	auto localFolder = Windows::Storage::ApplicationData::Current->LocalFolder;
-	return boost::filesystem::path(localFolder->Path->Data());
+	return ghc::filesystem::path(localFolder->Path->Data());
 }
 
 #else	// !WINAPI_PARTITION_APP
 
 #include <shlobj.h>
 
-boost::filesystem::path PathUtils::GetPathFromCsidl(int csidl)
+ghc::filesystem::path PathUtils::GetPathFromCsidl(int csidl)
 {
 	wchar_t userPathString[MAX_PATH];
 	if(FAILED(SHGetFolderPathW(NULL, csidl | CSIDL_FLAG_CREATE, NULL, 0, userPathString)))
 	{
 		throw std::runtime_error("Couldn't get path from csidl.");
 	}
-	return boost::filesystem::wpath(userPathString, boost::filesystem::native);
+	return ghc::filesystem::wpath(userPathString, ghc::filesystem::native);
 }
 
-boost::filesystem::path PathUtils::GetRoamingDataPath()
+ghc::filesystem::path PathUtils::GetRoamingDataPath()
 {
 	return GetPathFromCsidl(CSIDL_APPDATA);
 }
 
-boost::filesystem::path PathUtils::GetPersonalDataPath()
+ghc::filesystem::path PathUtils::GetPersonalDataPath()
 {
 	return GetPathFromCsidl(CSIDL_PERSONAL);
 }
 
-boost::filesystem::path PathUtils::GetAppResourcesPath()
+ghc::filesystem::path PathUtils::GetAppResourcesPath()
 {
-	return boost::filesystem::path(".");
+	return ghc::filesystem::path(".");
 }
 
-boost::filesystem::path PathUtils::GetCachePath()
+ghc::filesystem::path PathUtils::GetCachePath()
 {
 	return GetPathFromCsidl(CSIDL_LOCAL_APPDATA);
 }
@@ -58,53 +60,53 @@ boost::filesystem::path PathUtils::GetCachePath()
 #include <CoreFoundation/CoreFoundation.h>
 #include <Foundation/Foundation.h>
 
-boost::filesystem::path PathUtils::GetRoamingDataPath()
+ghc::filesystem::path PathUtils::GetRoamingDataPath()
 {
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
 	std::string directory = [[paths objectAtIndex: 0] fileSystemRepresentation];
-	return boost::filesystem::path(directory);
+	return ghc::filesystem::path(directory);
 }
 
-boost::filesystem::path PathUtils::GetAppResourcesPath()
+ghc::filesystem::path PathUtils::GetAppResourcesPath()
 {
 	NSBundle* bundle = [NSBundle mainBundle];
 	NSString* bundlePath = [bundle resourcePath];
-	return boost::filesystem::path([bundlePath fileSystemRepresentation]);
+	return ghc::filesystem::path([bundlePath fileSystemRepresentation]);
 }
 
-boost::filesystem::path PathUtils::GetPersonalDataPath()
+ghc::filesystem::path PathUtils::GetPersonalDataPath()
 {
 	return GetRoamingDataPath();
 }
 
-boost::filesystem::path PathUtils::GetCachePath()
+ghc::filesystem::path PathUtils::GetCachePath()
 {
 	NSArray* paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
 	std::string directory = [[paths objectAtIndex: 0] fileSystemRepresentation];
-	return boost::filesystem::path(directory);
+	return ghc::filesystem::path(directory);
 }
 
 #elif defined(__ANDROID__)
 
-static boost::filesystem::path s_filesDirPath;
+static ghc::filesystem::path s_filesDirPath;
 
-boost::filesystem::path PathUtils::GetAppResourcesPath()
+ghc::filesystem::path PathUtils::GetAppResourcesPath()
 {
 	//This won't work for Android
-	return boost::filesystem::path();
+	return ghc::filesystem::path();
 }
 
-boost::filesystem::path PathUtils::GetRoamingDataPath()
+ghc::filesystem::path PathUtils::GetRoamingDataPath()
 {
 	return s_filesDirPath;
 }
 
-boost::filesystem::path PathUtils::GetPersonalDataPath()
+ghc::filesystem::path PathUtils::GetPersonalDataPath()
 {
 	return s_filesDirPath;
 }
 
-boost::filesystem::path PathUtils::GetCachePath()
+ghc::filesystem::path PathUtils::GetCachePath()
 {
 	throw std::runtime_error("Not implemented.");
 }
@@ -117,50 +119,50 @@ void PathUtils::SetFilesDirPath(const char* filesDirPath)
 #elif defined(__linux__) || defined(__FreeBSD__)
 
 // TODO: is this an appropriate translation?
-boost::filesystem::path PathUtils::GetAppResourcesPath()
+ghc::filesystem::path PathUtils::GetAppResourcesPath()
 {
-	return boost::filesystem::path(getenv("HOME")) / ".local/share";
+	return ghc::filesystem::path(getenv("HOME")) / ".local/share";
 }
 
-boost::filesystem::path PathUtils::GetRoamingDataPath()
+ghc::filesystem::path PathUtils::GetRoamingDataPath()
 {
-	return boost::filesystem::path(getenv("HOME")) / ".local/share";
+	return ghc::filesystem::path(getenv("HOME")) / ".local/share";
 }
 
-boost::filesystem::path PathUtils::GetPersonalDataPath()
+ghc::filesystem::path PathUtils::GetPersonalDataPath()
 {
-	return boost::filesystem::path(getenv("HOME")) / ".local/share";
+	return ghc::filesystem::path(getenv("HOME")) / ".local/share";
 }
 
-boost::filesystem::path PathUtils::GetCachePath()
+ghc::filesystem::path PathUtils::GetCachePath()
 {
-	return boost::filesystem::path(getenv("HOME")) / ".cache";
+	return ghc::filesystem::path(getenv("HOME")) / ".cache";
 }
 
 #else	// !DEFINED(__ANDROID__) || !DEFINED(__APPLE__) || !DEFINED(__linux__) || !DEFINED(__FreeBSD__)
 
 #include <pwd.h>
 
-boost::filesystem::path PathUtils::GetPersonalDataPath()
+ghc::filesystem::path PathUtils::GetPersonalDataPath()
 {
 	passwd* userInfo = getpwuid(getuid());
-	return boost::filesystem::path(userInfo->pw_dir);
+	return ghc::filesystem::path(userInfo->pw_dir);
 }
 
 #endif	// !DEFINED(__APPLE__)
 
 #endif	// !DEFINED(_POSIX_VERSION)
 
-void PathUtils::EnsurePathExists(const boost::filesystem::path& path)
+void PathUtils::EnsurePathExists(const ghc::filesystem::path& path)
 {
-	typedef boost::filesystem::path PathType;
+	typedef ghc::filesystem::path PathType;
 	PathType buildPath;
 	for(PathType::iterator pathIterator(path.begin());
 		pathIterator != path.end(); pathIterator++)
 	{
 		buildPath /= (*pathIterator);
-		boost::system::error_code existsErrorCode;
-		bool exists = boost::filesystem::exists(buildPath, existsErrorCode);
+		std::error_code existsErrorCode;
+		bool exists = ghc::filesystem::exists(buildPath, existsErrorCode);
 		if(existsErrorCode)
 		{
 #ifdef _WIN32
@@ -186,7 +188,7 @@ void PathUtils::EnsurePathExists(const boost::filesystem::path& path)
 		}
 		if(!exists)
 		{
-			boost::filesystem::create_directory(buildPath);
+			ghc::filesystem::create_directory(buildPath);
 		}
 	}
 }
@@ -229,13 +231,13 @@ std::wstring GetPathFromNativeStringInternal(const std::string& str)
 //NativeString <-> Path Function Implementations
 ////////////////////////////////////////////
 
-std::string PathUtils::GetNativeStringFromPath(const boost::filesystem::path& path)
+std::string PathUtils::GetNativeStringFromPath(const ghc::filesystem::path& path)
 {
 	return GetNativeStringFromPathInternal(path.native());
 }
 
-boost::filesystem::path PathUtils::GetPathFromNativeString(const std::string& str)
+ghc::filesystem::path PathUtils::GetPathFromNativeString(const std::string& str)
 {
-	auto cvtStr = GetPathFromNativeStringInternal<boost::filesystem::path::string_type>(str);
-	return boost::filesystem::path(cvtStr);
+	auto cvtStr = GetPathFromNativeStringInternal<ghc::filesystem::path::string_type>(str);
+	return ghc::filesystem::path(cvtStr);
 }

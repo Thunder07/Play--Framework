@@ -11,7 +11,7 @@ namespace Framework
 	class CConfig
 	{
 	public:
-		typedef boost::filesystem::path PathType;
+		typedef ghc::filesystem::path PathType;
 
 											CConfig(const PathType&, bool readonly = false);
 											CConfig(const CConfig&) = delete;

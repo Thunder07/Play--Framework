@@ -1,7 +1,7 @@
 #include "win32/WebBrowser.h"
 #include <assert.h>
 #include <ExDispid.h>
-#include <boost/filesystem.hpp>
+#include <ghc/filesystem.hpp>
 
 using namespace Framework;
 using namespace Framework::Win32;
@@ -110,13 +110,13 @@ void CWebBrowser::EnsureIE9ModeIsActivated()
 	{
 		return;
 	}
-	boost::filesystem::path modulePath = 
+	ghc::filesystem::path modulePath = 
 		[]()
 		{
 			TCHAR modulePath[MAX_PATH + 1];
 			GetModuleFileName(NULL, modulePath, MAX_PATH);
 			modulePath[MAX_PATH] = 0;
-			return boost::filesystem::path(modulePath);
+			return ghc::filesystem::path(modulePath);
 		}();
 	auto moduleFileName = modulePath.leaf().native();
 	DWORD emulationValue = 9000;

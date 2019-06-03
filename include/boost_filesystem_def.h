@@ -5,11 +5,11 @@
 #ifdef _WIN32
 
 #define generic boost_generic
-#include <boost/filesystem.hpp>
+#include <ghc/filesystem.hpp>
 #undef generic
 
 #else
 
-#include <boost/filesystem.hpp>
+#include <ghc/filesystem.hpp>
 
 #endif
