@@ -1,5 +1,7 @@
 #include "StringUtils.h"
 
+#include <sstream>
+
 void StringUtils::replace_all(std::string& str, const std::string replace, std::string replaceWith)
 {
 	auto str2 = str;
@@ -18,4 +20,11 @@ void StringUtils::replace_all(std::string& str, const std::string replace, std::
 void StringUtils::erase_all(std::string& str, std::string remove)
 {
 	StringUtils::replace_all(str, remove, "");
+}
+
+void StringUtils::split(std::vector<std::string>& ret, std::string text, const char* delim, bool trim)
+{
+	std::istringstream iss(text);
+	std::vector<std::string> results(std::istream_iterator<std::string>{iss},
+									std::istream_iterator<std::string>());
 }
