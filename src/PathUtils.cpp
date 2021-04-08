@@ -110,7 +110,7 @@ void PathUtils::SetFilesDirPath(const char* filesDirPath)
 	s_filesDirPath = filesDirPath;
 }
 
-#elif defined(__linux__) || defined(__FreeBSD__)
+#elif defined(__linux__) || defined(__FreeBSD__) || defined(__EMSCRIPTEN__)
 
 // TODO: is this an appropriate translation?
 fs::path PathUtils::GetAppResourcesPath()
@@ -136,6 +136,7 @@ fs::path PathUtils::GetCachePath()
 #else	// !DEFINED(__ANDROID__) || !DEFINED(__APPLE__) || !DEFINED(__linux__) || !DEFINED(__FreeBSD__)
 
 #include <pwd.h>
+#include <unistd.h>
 
 fs::path PathUtils::GetPersonalDataPath()
 {
@@ -180,7 +181,7 @@ void PathUtils::EnsurePathExists(const fs::path& path)
 		}
 		if(!exists)
 		{
-			fs::create_directory(buildPath);
+			fs::create_directories(buildPath);
 		}
 	}
 }

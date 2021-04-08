@@ -13,5 +13,5 @@ set(SRC_FILES
 )
 
 add_library(Framework_OpenAl ${SRC_FILES})
-target_link_libraries(Framework_OpenAl PUBLIC ${OPENAL_LIBRARY})
+target_link_libraries(Framework_OpenAl PUBLIC openal)
 target_include_directories(Framework_OpenAl PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../include ${OPENAL_INCLUDE_DIR})
